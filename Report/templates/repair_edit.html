@@ -1,0 +1,191 @@
+{% extends 'baseadmin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">🔧 แก้ไขรายการแจ้งซ่อม </h2>
+    <form method="post" class="space-y-6" action="{% url 'repair_edit' repair.id %}">
+        {% csrf_token %}
+        <!-- {{ form.as_p }} -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">ประเภท</label>
+                {{ form.category }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">หัวข้อ</label>
+                {{ form.sub_item }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">ความเร่งด่วน</label>
+                {{ form.status_user }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">รหัสอุปกรณ์</label>
+                {{ form.device_code }}
+            </div>
+
+            <div>
+    <label class="block text-gray-700 font-medium mb-1">เลขครุภัณฑ์</label>
+    <div id="asset-number-container">
+        {{ form.asset_number }}
+    </div>
+</div>
+
+<div class="mt-2">
+    <label>
+        {{ form.unknown_device }} ไม่ทราบเลขครุภัณฑ์
+    </label>
+</div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">แผนก</label>
+                {{ form.department }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 font-medium mb-1">รายละเอียด</label>
+                {{ form.detail }}
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 font-medium mb-1">สถานะปัจจุบัน</label>
+                <div class="w-1/4 bg-gray-100 text-gray-600 px-4 py-2 rounded-md">
+                    {{ repair.get_status_display }}
+                </div>
+            </div>
+
+            <div></div>
+
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 font-medium mb-1">วิธีการแก้ไข</label>
+                    {{ form.remark }}
+            </div>
+
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">ชื่อผู้แจ้ง</label>
+                {{ form.reported_by }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">เจ้าหน้าที่ที่รับผิดชอบ</label>
+                {{ form.assigned_to }}
+            </div>
+        </div>
+        <div class="flex justify-between items-start mt-6">
+            <!-- ปุ่มซ้าย: สถานะ -->
+            <div class="grid grid-cols-2 gap-4">
+                <button type="button"
+                    class="status-btn w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow"
+                    data-id="{{ repair.id }}" data-status="in_progress">กำลังดำเนินการ</button>
+
+                <button type="button"
+                    class="status-btn w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded shadow"
+                    data-id="{{ repair.id }}" data-status="completed">เสร็จสิ้น</button>
+
+                <button type="button"
+                    class="status-btn w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded shadow"
+                    data-id="{{ repair.id }}" data-status="repairclaim">ซ่อม/เคลม</button>
+
+                <button type="button"
+                    class="status-btn w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded shadow"
+                    data-id="{{ repair.id }}" data-status="cancelled">ยกเลิก</button>
+            </div>
+
+            <!-- ปุ่มขวา: กลับ + บันทึก -->
+            <div class="space-x-4 ml-6">
+                <a href="{% url 'pl_admin' %}"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded">
+                    กลับ
+                </a>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow">
+                    💾 บันทึกข้อมูล
+                </button>
+            </div>
+        </div>
+
+</div>
+
+</form>
+</div>
+
+<script>
+    const checkbox = document.getElementById("id_unknown_device");
+    const assetContainer = document.getElementById("asset-number-container");
+
+    function toggleAssetField() {
+        if (checkbox.checked) {
+            assetContainer.innerHTML = '<div class="text-muted">ไม่ทราบเลขครุภัณฑ์</div>';
+        } else {
+            assetContainer.innerHTML = '{{ form.asset_number|escapejs }}';
+        }
+    }
+
+    checkbox.addEventListener("change", toggleAssetField);
+    document.addEventListener("DOMContentLoaded", toggleAssetField);
+</script>
+
+<script>
+    document.querySelectorAll('.status-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const reportId = button.getAttribute('data-id');
+            const newStatus = button.getAttribute('data-status');
+
+            fetch(`/update-status/${reportId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'  // ต้องแน่ใจว่าอยู่ใน template
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('อัปเดตสถานะเรียบร้อยแล้ว');
+                        location.reload(); // หรือจะอัปเดต UI ตรงนั้นเลยก็ได้
+                    } else {
+                        alert('เกิดข้อผิดพลาด');
+                    }
+                });
+        });
+    });
+
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_reported_by').select2({
+            width: '100%',
+            placeholder: "ค้นหาชื่อผู้แจ้ง...",
+            allowClear: true,
+            containerCssClass: 'tailwind-select2', // ใช้ class ชื่อเฉพาะ
+            dropdownCssClass: 'tailwind-dropdown'
+        });
+    });
+</script>
+{% endblock %}

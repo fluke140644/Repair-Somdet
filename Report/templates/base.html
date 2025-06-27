@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}ระบบแจ้งซ่อม{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'Report/images/favicon.png' %}">
+  {% block head %}{% endblock %}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+  <style>
+    .sidebar-transition {
+      transition: all 0.3s;
+    }
+
+    #sidebar {
+      transform: translateX(-100%);
+    }
+
+    #sidebar.active {
+      transform: translateX(0);
+    }
+
+    .content-transition {
+      transition: all 0.3s;
+    }
+
+    .content-move {
+      margin-left: 16rem;
+    }
+
+    td.text-center {
+
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .max-w-screen-lg {
+      max-width: 1920px;
+    }
+
+    #custom-length select,
+    #custom-search input[type="search"] {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 12px;
+    }
+
+    #table-controls {
+      background-color: white;
+      border-bottom: 1px solid #eee;
+    }
+
+    #custom-pagination .paginate_button {
+      padding: 6px 12px;
+      margin: 0 2px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+      cursor: pointer;
+    }
+
+    #custom-pagination .paginate_button.current {
+      background: #4ade80;
+      /* เขียว */
+      color: white;
+      border-color: #4ade80;
+    }
+
+    #custom-pagination .paginate_button:hover {
+      background: #e0e0e0;
+    }
+
+    .bg-purple {
+      background-color: #6f42c1 !important;
+      /* Bootstrap's default purple */
+      color: white;
+    }
+
+    .text-purple {
+      color: #6f42c1 !important;
+    }
+
+    .border-purple {
+      border-color: #6f42c1 !important;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav
+    class="fixed top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-blue-500 text-white flex justify-between items-center px-4 py-3 shadow z-50">
+
+    <!-- ซ้าย: โลโก้ + ระบบแจ้งซ่อม + เมนูใหญ่ (desktop) -->
+    <div class="flex items-center space-x-6">
+      <!-- โลโก้ + ระบบแจ้งซ่อม -->
+      <a href="/" class="flex items-center space-x-3">
+        <img src="https://sdh.go.th/img/sdh.jpg" class="w-10 h-10 rounded-full" alt="logo">
+        <span class="text-xl font-bold whitespace-nowrap">ระบบแจ้งซ่อม</span>
+      </a>
+
+      <!-- เมนูใหญ่ (เฉพาะ desktop) -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a class="nav-link" href="/about">คู่มือและการใช้งาน</a>
+        <a class="nav-link cursor-pointer" onclick="openModal()">ติดต่อเจ้าหน้าที่</a>
+        <a class="nav-link" href="/repair-table">ดูรายการ</a>
+        {% if user.is_staff %}
+        <a class="nav-link" href="/pl_admin">จัดการรายการแจ้งซ่อม</a>
+        <a class="nav-link" href="/dashadmin">Dashboard</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ขวา: ปุ่ม Hamburger (เฉพาะมือถือ) -->
+    <button id="menu-toggle" class="md:hidden text-white focus:outline-none">
+      <i class="fas fa-bars text-2xl"></i>
+    </button>
+
+
+    {% if user.is_authenticated %}
+    <div class="relative">
+      <button onclick="toggleDropdown()" class="flex items-center gap-2 focus:outline-none" id="profileButton">
+        <img src="{% static 'Report/images/pf-somdet.png' %}" alt="Profile" class="w-8 h-8 rounded-full border">
+        <span class="text-sm font-medium">{{ request.user.username }}</span>
+        <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+            clip-rule="evenodd" />
+        </svg>
+      </button>
+      <div id="profileDropdown"
+        class="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-md shadow-lg py-2 hidden z-50">
+        <div class="px-4 py-2 border-b text-sm">👤 {{ request.user.first_name }} {{ request.user.last_name }}</div>
+        <a href="{% url 'my_repairs' %}" class="block px-4 py-2 text-sm hover:bg-gray-100">📄 รายการของฉัน</a>
+        {% if user.is_staff %}
+        <a href="/pl_admin" class="block px-4 py-2 text-sm hover:bg-gray-100">🛠️ หน้า Admin</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">🚪 ออกจากระบบ</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+    </div>
+  </nav>
+
+  <!-- Mobile Slide Menu -->
+
+  <div id="mobileMenu"
+    class="fixed top-0 left-0 w-64 h-full bg-gradient-to-r from-green-100 to-pink-100 shadow-lg transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="p-4 border-b text-xl font-bold text-black-600">เมนู</div>
+    <div class="flex flex-col p-4 space-y-8 text-gray-700">
+      <a class="hover:text-blue-500" href="/">หน้าหลัก</a>
+      <a class="hover:text-blue-500" href="#">คู่มือและการใช้งาน</a>
+      <a class="hover:text-blue-500" href="#" onclick="openModal()">ติดต่อเจ้าหน้าที่</a>
+      <a class="hover:text-blue-500" href="/repair-table">ดูรายการ</a>
+      {% if user.is_staff %}
+      <a class="hover:text-blue-500" href="/pl_admin">จัดการรายการแจ้งซ่อม</a>
+      <a class="hover:text-blue-500" href="/dashadmin">Dashboard</a>
+      {% endif %}
+
+
+      {% if user.is_authenticated %}
+      <hr>
+      <div class="text-sm text-gray-500">👤 {{ request.user.username }}</div>
+      {% if user.is_staff %}
+      <a href="/pl_admin" class="hover:text-blue-500">🛠️ หน้า Admin</a>
+      {% endif %}
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="text-left text-red-600 hover:underline">🚪 ออกจากระบบ</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Overlay เมื่อเมนูเปิด -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-10 hidden z-40" onclick="closeMobileMenu()"></div>
+
+
+
+
+  <!-- Main Content -->
+  <main id="main-content" class="content-transition flex-1 ml-0 pt-20">
+    {% block content %}
+    {% endblock %}
+  </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="contactModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">ติดต่อเจ้าหน้าที่</h2>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+      </div>
+      <p class="mb-4">สายด่วน 155,156 หน่วยงานกลุ่มงานยุทธศาสตร์และเทคโนโลยีสารสนเทศ(IT) <br>เวลา : 08:00 น. - 16.30 น.
+      </p>
+      <p class="mb-4">หลัง 16:30 ติดต่อ :</p>
+      <p class="mb-4">1. นายศรายุทธ นวะศรี โทร : 088-8888888</p>
+      <p class="mb-4">2. นายคณิศร สายสินธุ์ โทร : 088-8888888</p>
+      <p class="mb-4">3. นายคณาธิป สนศรี โทร : 088-8888888</p>
+      <p class="mb-4">4. นายจักรพรรดิ บุญเยี่ยม โทร : 088-8888888</p>
+      <p class="mb-4">5. นายสุวิจักขณ์ วิเชียรชัยชาญ โทร : 088-8888888</p>
+      <p class="mb-4">อีเมล: support@hospital.go.th</p>
+      <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">ปิด</button>
+    </div>
+  </div>
+
+  <script>
+
+    function openModal() {
+      document.getElementById('contactModal').classList.remove('hidden');
+    }
+    function closeModal() {
+      document.getElementById('contactModal').classList.add('hidden');
+    }
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById("profileDropdown");
+      dropdown.classList.toggle("hidden");
+    }
+
+    // ปิด dropdown ถ้าคลิกนอก dropdown
+    document.addEventListener("click", function (event) {
+      const button = document.getElementById("profileButton");
+      const dropdown = document.getElementById("profileDropdown");
+
+      if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    // เปิดเมนู slide
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+      document.getElementById('mobileMenu').classList.remove('-translate-x-full');
+      document.getElementById('overlay').classList.remove('hidden');
+    });
+
+    // ปิดเมนู slide
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('-translate-x-full');
+      document.getElementById('overlay').classList.add('hidden');
+    }
+
+    $(document).ready(function () {
+      $('#repair-table').DataTable({
+        responsive: true,
+        pageLength: 5,
+        lengthMenu: [[5, 10, 15, -1], [5, 10, 15, "ทั้งหมด"]],
+        order: [[2, 'desc']],
+        columnDefs: [
+          { orderable: true, targets: [2] },
+          { orderable: false, targets: '_all' }
+        ],
+        language: {
+          search: "ค้นหา:",
+          lengthMenu: "แสดง _MENU_ รายการต่อหน้า",
+          zeroRecords: "ไม่พบข้อมูล",
+          info: "หน้า _PAGE_ จาก _PAGES_",
+          infoEmpty: "ไม่มีข้อมูล",
+          infoFiltered: "(กรองจากทั้งหมด _MAX_ รายการ)"
+        },
+        dom:
+          '<"hidden"l><"hidden"f>tip', // ซ่อนไว้ก่อน แล้วเราจะย้ายตำแหน่งเอง
+        initComplete: function () {
+          // ย้าย length ไปยัง custom div
+          $('#custom-length').html($('#repair-table_length'));
+          $('#custom-search').html($('#repair-table_filter'));
+          $('#custom-pagination').html($('#repair-table_paginate'));
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,176 @@
+{% load duration_extras %}
+
+<div class="relative">
+    <!-- กล่องควบคุม sticky -->
+    <div id="table-controls"
+        class="sticky top-0 z-10 bg-white py-2 px-4 shadow-sm border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div id="custom-length" class="text-sm"></div>
+        <div id="custom-search" class="text-sm"></div>
+    </div>
+
+    <!-- กล่อง scroll แนวนอน -->
+    <div class="overflow-x-auto">
+        <table id="repair-table" class="w-full table-auto border divide-y min-w-[800px] text-sm md:text-base">
+            <thead class="bg-gray-100 text-gray-700">
+                <th style="width: 30px;"></th> <!-- ! -->
+                <th>สถานะ</th> <!--สถานะ-->
+                <th>ID</th> <!--ID-->
+                <th>ประเภท<br>รายการ</th> <!--รายการ-->
+                <th>รหัสอุปกรณ์<br>/ยี่ห้อ</th> <!--รหัสอุปกรณ์-->
+                <th>แผนก</th> <!--แผนก-->
+                <th>ชื่อผู้แจ้ง</th> <!--User-->
+                <th>เจ้าหน้าที่</th> <!--เจ้าหน้าที่-->
+                <th>เวลาแจ้ง</th>
+                <th style="color:rgb(63, 139, 0);">เสร็จสิ้น</th> <!---->
+                <th>หมายเหตุ</th>
+                {% if show_action_buttons %}
+                <th>ADMIN</th>
+                {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr style="white-space: nowrap;">
+                    <td class="text-center align-middle">
+                        {% if report.status_user == 'เร่งด่วน' or report.status_user == 'เร่งด่วน (กรณีกระทบคนไข้)' %}
+                        <i class="fas fa-exclamation-circle" style="color: red ;" title="เร่งด่วน"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if report.status == "completed" %}
+                        <span
+                            class="inline-block bg-green-600 text-white text-sm font-semibold px-2  rounded-2 shadow">เสร็จสิ้น</span>
+                        {% elif report.status == "pending" %}
+                        <span
+                            class="inline-block bg-yellow-500 text-white text-sm font-semibold px-2  rounded-2 shadow">แจ้งซ่อม</span>
+                        {% elif report.status == "in_progress" %}
+                        <span
+                            class="inline-block bg-blue-600 text-white text-sm font-semibold px-2  rounded-2 shadow">กำลังดำเนินการ</span>
+                        {% elif report.status == "repairclaim" %}
+                        <span
+                            class="inline-block bg-purple-600 text-white text-sm font-semibold px-2  rounded-2 shadow">
+                            ส่งซ่อม/เคลม
+                        </span>
+                        {% elif report.status == "cancelled" %}
+                        <span
+                            class="inline-block bg-red-600 text-white text-sm font-semibold px-2  rounded-2 shadow">ยกเลิก</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ report.request_id }}</td>
+                    <td>{{ report.category }} <br> {{ report.sub_item }}</td>
+                    <td>
+                        {% if report.device_code %}
+                        {{ report.device_code }}
+                        {% else %}
+                        -
+                        {% endif %}</td>
+                    </td>
+                    <td>{{ report.department }}</td>
+                    <td>
+                        {% if report.reported_by %}
+                        {{ report.reported_by.get_full_name|default:report.reported_by.username }}
+                        {% else %}
+                        ไม่ระบุ
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if report.assigned_to %}
+                        {{ report.assigned_to.first_name|default:report.assigned_to.username }}
+                        {% else %}
+                        -
+                        {% endif %}</td>
+                    <td>{{ report.created_at|date:"d/m/Y" }}<br>
+                        {{ report.created_at|date:"H:i" }}
+                    </td>
+                    <td>
+                        {% if report.status == 'in_progress' %}
+                        {% if report.in_progress_at %}
+                        ดำเนินการ: {{ report.in_progress_at|date:"d/m/Y" }}<br>
+                        {{ report.in_progress_at|date:"H:i" }}
+                        {% else %}
+                        กำลังดำเนินการ: -
+                        {% endif %}
+
+                        {% elif report.status == 'completed' %}
+                        เสร็จสิ้น: {{ report.completed_at|date:"d/m/Y" }}<br>
+                        {{ report.in_progress_at|date:"H:i" }} - {{ report.completed_at|date:"H:i" }}
+                        {% if report.duration %}
+                        ({{ report.duration|duration_in_minutes }})
+                        {% endif %}
+
+                        {% if report.repairclaim_at %}
+                        <br>ซ่อม/เคลม: {{ report.repairclaim_at|date:"d/m/Y"}}<br>
+                        {{ report.repairclaim_at|date:"H:i" }} - {{ report.completed_at|date:"H:i" }}
+                        {% if report.claim_duration %}
+                        ({{ report.claim_duration|duration_in_minutes }})
+                        {% endif %}
+                        {% endif %}
+
+                        {% elif report.status == 'repairclaim' %}
+                        {% if report.repairclaim_at %}
+                        ส่งซ่อม/เคลม: {{ report.repairclaim_at|date:"d/m/Y" }}<br>
+                        {{ report.repairclaim_at|date:"H:i" }}
+                        {% else %}
+                        ดำเนินการ: ไม่มี
+                        {% endif %}
+                        {% else %}
+                        -
+                        {% endif %}
+
+                    </td>
+
+                    <td><a href="{% url 'repair_detail' report.id %}" class="btn btn-sm btn-info">แสดง</a></td>
+                    {% if show_action_buttons %}
+                    <td class="p-2 align-middle text-center">
+                        <div class="flex justify-center items-center space-x-2 h-full">
+                            <a href="{% url 'repair_edit' id=report.id %}"
+                                class="w-14 h-9 text-xs bg-blue-500 text-black rounded hover:bg-blue-600 flex items-center justify-center text-center leading-none">
+                                แก้ไข
+                            </a>
+
+                            <button
+                                class="w-14 h-9 text-xs bg-red-500 text-black rounded hover:bg-red-600 delete-btn flex items-center justify-center text-center leading-none"
+                                data-id="{{ report.id }}" disabled>
+                                ลบ
+                            </button>
+                            {% if show_action_buttons %}
+                            <button class="status-btn w-14 h-9 text-black text-xs rounded 
+            {% if report.status == 'pending' %}
+                bg-cyan-400 hover:bg-cyan-600
+            {% elif report.status == 'in_progress' %}
+                bg-green-500 hover:bg-green-600
+            {% elif report.status == 'repairclaim' %}
+                bg-green-500 hover:bg-green-600
+            {% else %}
+                bg-gray-300 cursor-not-allowed text-gray-700
+            {% endif %}" data-id="{{ report.id }}" data-status="{{ report.status }}" {% if report.status=='completed'
+                                %}disabled{% endif %}>
+                                {% if report.status == 'pending' %}
+                                รับงาน
+                                {% elif report.status == 'in_progress' %}
+                                เสร็จ
+                                {% elif report.status == 'repairclaim' %}
+                                เสร็จ
+                                {% else %}
+                                เสร็จงานแล้ว
+                                {% endif %}
+                                {% endif %}
+
+                            </button>
+                        </div>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center">ไม่มีรายการแจ้งซ่อม</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+    <!-- กล่อง pagination -->
+    <div id="custom-pagination"
+        class="sticky bottom-0 bg-white py-2 px-4 border-t shadow-sm z-10 flex justify-center mt-2"></div>
+</div>

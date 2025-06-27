@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ฟอร์มแจ้งซ่อม</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    label { display: block; margin-top: 10px; }
+    .sub-options { margin-top: 10px; }
+    .sub-options label { display: inline-block; margin-right: 15px; }
+  </style>
+</head>
+<body>
+
+  <h2>ฟอร์มแจ้งซ่อมอุปกรณ์</h2>
+
+  <label for="department">แผนก:</label>
+  <select id="department">
+    <option value="">-- เลือกแผนก --</option>
+    <option value="เทคโนโลยีสารสนเทศ (IT)">เทคโนโลยีสารสนเทศ (IT)</option>
+    <option value="อุบัติเหตุ-ฉุกเฉิน (ER)">อุบัติเหตุ-ฉุกเฉิน (ER)</option>
+  </select>
+
+  <label for="category">ประเภทหลัก:</label>
+  <select id="category">
+    <option value="">-- เลือกประเภท --</option>
+    <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
+    <option value="เครื่องปริ้น">เครื่องปริ้น</option>
+  </select>
+
+  <div class="sub-options" id="subOptions"></div>
+
+  <label for="device_code">ยี่ห้อ/รุ่น:</label>
+  <select id="device_code">
+    <option value="">-- เลือกรหัส --</option>
+  </select>
+
+  <script>
+    const subItems = {
+      "คอมพิวเตอร์": ["จอคอมพิวเตอร์", "All in One", "เมาส์", "คีย์บอร์ด"],
+      "เครื่องปริ้น": ["กระดาษติด", "หมึกหมด", "สแกนไม่ได้"]
+    };
+
+    const deviceOptions = {
+      "เทคโนโลยีสารสนเทศ (IT)": {
+        "คอมพิวเตอร์": {
+          "จอคอมพิวเตอร์": [
+            { value: "Acer24", label: "Acer 24”" },
+            { value: "Dell24", label: "Dell 24”" }
+          ],
+          "All in One": [
+            { value: "Think1", label: "ThinkCentre 1" }
+          ],
+          "เมาส์": [
+            { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+            { value: "LogitechG340", label: "Logitech G340" }
+          ],
+          "คีย์บอร์ด": [
+            { value: "LenovoKB", label: "Lenovo EKB-536A" }
+          ]
+        },
+        "เครื่องปริ้น": {
+          "กระดาษติด": [
+            { value: "HP1020", label: "HP LaserJet 1020" }
+          ],
+          "หมึกหมด": [
+            { value: "CanonG2010", label: "Canon G2010" }
+          ]
+        }
+      },
+      "อุบัติเหตุ-ฉุกเฉิน (ER)": {
+        "คอมพิวเตอร์": {
+          "เมาส์": [
+            { value: "LogitechER", label: "Logitech ER-01" }
+          ]
+        },
+        "เครื่องปริ้น": {
+          "หมึกหมด": [
+            { value: "CanonER", label: "Canon LBP2900" }
+          ]
+        }
+      }
+    };
+
+    function showSubOptions() {
+      const category = document.getElementById("category").value;
+      const subDiv = document.getElementById("subOptions");
+
+      subDiv.innerHTML = "";
+
+      if (subItems[category]) {
+        subItems[category].forEach(sub => {
+          const label = document.createElement("label");
+          const radioId = `sub-${sub}`;
+          label.innerHTML = `
+            <input type="radio" name="sub_item" id="${radioId}" value="${sub}">
+            ${sub}
+          `;
+          label.querySelector("input").addEventListener("change", updateDeviceCode);
+          subDiv.appendChild(label);
+        });
+      }
+
+      // clear device code list
+      document.getElementById("device_code").innerHTML = `<option value="">-- เลือกรหัส --</option>`;
+    }
+
+    function updateDeviceCode() {
+      const dept = document.getElementById("department").value;
+      const category = document.getElementById("category").value;
+      const sub = document.querySelector('input[name="sub_item"]:checked')?.value;
+      const deviceSel = document.getElementById("device_code");
+
+      deviceSel.innerHTML = `<option value="">-- เลือกรหัส --</option>`;
+
+      if (
+        dept &&
+        category &&
+        sub &&
+        deviceOptions[dept]?.[category]?.[sub]
+      ) {
+        deviceOptions[dept][category][sub].forEach(item => {
+          const opt = document.createElement("option");
+          opt.value = item.value;
+          opt.textContent = item.label;
+          deviceSel.appendChild(opt);
+        });
+      }
+    }
+
+    // Event listeners
+    document.getElementById("department").addEventListener("change", () => {
+      showSubOptions();
+      updateDeviceCode();
+    });
+
+    document.getElementById("category").addEventListener("change", () => {
+      showSubOptions();
+      updateDeviceCode();
+    });
+  </script>
+
+</body>
+</html>

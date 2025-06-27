@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load status_color %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+
+</style>
+<div class="container mt-4">
+    <div class="w-full justify-center my-8">
+        <h2
+            class="text-5xl font-extrabold bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent border border-blue-300 px-6 py-4 rounded-2xl shadow-lg text-center">
+            แดชบอร์ดระบบแจ้งซ่อม
+        </h2>
+    </div>
+
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="m-0 mx-auto "><strong>สถิติแจ้งซ่อม</strong></h1>
+                    <a href="{% url 'export_excel' %}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-file-earmark-excel-fill"></i> ดาวน์โหลด Excel
+                    </a>
+                </div>
+                <div class="d-flex justify-content-end align-items-end p-2">
+                    <form method="get" action="{% url 'monthly_report_pdf' %}" target="_blank">
+                        <input type="month" name="month" required
+                         class="form-control d-inline-block"
+                         
+                         style="height: 30px; padding: 4px 10px; border: 1px solid #ff0000; border-radius: 8px; font-size: 14px;
+                                line-height: 1;
+                                color: #333;
+                                background-color: #fff8f8;
+                                box-shadow: inset 0 0.5px 0px rgba(0,0,0,0.1);
+                                outline: none;
+                                width: auto;
+                                transition: all 0.3s ease;"
+                                onfocus="this.style.borderColor='#0056b3'; this.style.backgroundColor='#e6f2ff';"
+                                onblur="this.style.borderColor='#007BFF'; this.style.backgroundColor='#f0f8ff';"/>
+                        <button type="submit" class="btn btn-outline-danger btn-sm"> 📄 ดาวน์โหลดรายงาน PDF</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-body">
+    <div class="row">
+        <!-- วงกลมซ้าย: การแจ้งซ่อม -->
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+            <h5 class="mb-3">การแจ้งซ่อม</h5>
+            <div class="d-flex align-items-center">
+                <div style="width: 220px; height: 220px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- วงกลมขวา: หมวดหมู่แจ้งซ่อม -->
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+            <h5 class="mb-3">หมวดหมู่แจ้งซ่อม</h5>
+            <div style="width: 220px; height: 220px;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center gx-4 gy-4 mb-4">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="card shadow-sm border-start border-warning border-4 h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-warning">รอดำเนินการ</h6>
+                    <p class="display-6 text-warning">{{ pending_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="card shadow-sm border-start border-primary border-4 h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-primary">กำลังดำเนินการ</h6>
+                    <p class="display-6 text-primary">{{ in_progress_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="card shadow-sm border-start border-purple border-4 h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-purple">ซ่อม/เคลม</h6>
+                    <p class="display-6 text-purple">{{ repairclaim }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="card shadow-sm border-start border-success border-4 h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-success">เสร็จสิ้น</h6>
+                    <p class="display-6 text-success">{{ completed_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="card shadow-sm border-start border-danger border-4 h-100">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-danger">ยกเลิก</h6>
+                    <p class="display-6 text-danger">{{ cancelled_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+</div>
+
+<hr><br>
+
+
+<div class="container-fluid px-20">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h3 m-0"><strong>รายการแจ้งซ่อมล่าสุด</strong></h1>
+                <a href="{% url 'create_repair' %}" class="btn ">
+                    <i class="bi bi-plus-circle"></i> แจ้งซ่อมใหม่
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>รหัส</th>
+                            <th>แผนก</th>
+                            <th>หมวดหมู่</th>
+                            <th>สถานะ</th>
+                            <th>วันที่แจ้ง</th>
+                            <th>ดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in latest_reports %}
+                        <tr>
+                            <td>{{ report.request_id }}</td>
+                            <td>{{ report.department }}</td>
+                            <td>{{ report.category }}</td>
+                            <td>
+                                <span class="badge bg-{{ report.status|get_status_color }}">
+                                    {{ report.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ report.created_at|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'repair_detail' report.id %}"
+                                    class="btn btn-sm btn-outline-primary">ดู</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">ไม่มีรายการแจ้งซ่อม</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Pagination Controls -->
+    <div class="card-footer">
+        <nav class="d-flex justify-content-end py-3">
+            <ul class="pagination mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">ย้อนกลับ</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">ย้อนกลับ</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item"><a
+                        class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">ถัดไป</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">ถัดไป</span></li>
+                    {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+          labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ซ่อม/เคลม', 'เสร็จสิ้น', 'ยกเลิก'],
+          datasets: [{
+              data: [
+                  {{ pending_count }},
+                  {{ in_progress_count }},
+                  {{ repairclaim }},
+                  { { completed_count } },
+                  { { cancelled_count } }
+              ],
+              backgroundColor: [
+                  '#ffc107', '#0d6efd', '#6f42c1', '#198754', '#dc3545'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                position: 'right'
+
+            }
+        }
+    }
+});
+</script>
+
+{% comment %} -----------------แจ้งซ่อมมากสุด------------------ {% endcomment %}
+<script>
+    const categoryChart = new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ category_labels| safe }},
+    datasets: [{
+        data: {{ category_values| safe }},
+        backgroundColor: [
+        '#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff', '#f77825'
+    ],
+        borderWidth: 1
+            }]
+        },
+    options: {
+        responsive: true,
+            maintainAspectRatio: false,
+                plugins: {
+            legend: {
+                position: 'right'
+            }
+        }
+    }
+    });
+</script>
+{% endblock %}

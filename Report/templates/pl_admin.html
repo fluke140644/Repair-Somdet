@@ -1,0 +1,199 @@
+{% extends "baseadmin.html" %}
+{% load static %}
+{% load duration_extras %}
+{% block title %}รายการแจ้งซ่อม Admin{% endblock %}
+
+{% block head %}
+<!-- รวม DataTables CSS และ JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="{% static 'Report/finisher-header.es5.min.js' %}" type="text/javascript"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+
+<style>
+  #repair-table thead :nth-child(n+1):nth-child(-n+13) {
+    background-color: #f3f3f3;
+    /* สีเทาอ่อน */
+  }
+
+  /* เพิ่มเส้นแบ่งระหว่างแต่ละแถว */
+  #repair-table tbody tr {
+    border-bottom: 1px solid #000000;
+    /* เส้นแบ่งสีเทาอ่อน */
+  }
+
+  /* เพิ่มระยะห่างของเนื้อหาภายในเซลล์ */
+  #repair-table th,
+  #repair-table td {
+    padding: 12px;
+    /* เพิ่มระยะห่างในเซลล์ */
+    text-align: center;
+    /* จัดเนื้อหากลาง */
+    vertical-align: middle;
+    /* จัดเนื้อหากลางในแนวตั้ง */
+  }
+
+  /* กำหนดความกว้างของตาราง */
+  #repair-table {
+    width: 100%;
+    /* ให้ตารางขยายเต็มพื้นที่ */
+    table-layout: auto;
+    /* ให้คอลัมน์ปรับขนาดอัตโนมัติ */
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+
+    overflow: auto;
+  }
+
+  .finisher-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    color: white;
+    padding: 50px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body class="finisher-header bg-gray-100 min-h-screen">
+  <div class="w-full sm:max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl px-4 py-6 mx-auto">
+    <div id="main-content" class="flex flex-col gap-4 mt-4 content-transition">
+      <div class="pt-15 w-full">
+        <div class="content-container w-full bg-white p-4 rounded-lg shadow">
+          <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center">ADMIN</h1>
+          <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center">รายการแจ้งซ่อมทั้งหมด</h1>
+
+
+          <!-- ตาราง -->
+          <div class="overflow-x-auto">
+            {% include "includes/repair_table_partial.html" with reports=reports show_action_buttons=True %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+
+<script>
+  $(document).ready(function () {
+    $('.delete-btn').click(function () {
+      let reportId = $(this).data('id');
+      if (confirm('คุณแน่ใจว่าต้องการลบใช่ไหม?')) {
+        $.ajax({
+          url: '/repair/delete/' + reportId + '/',
+          type: 'POST',
+          data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function (response) {
+            if (response.status === 'success') {
+              $('button[data-id="' + reportId + '"]').closest('tr').remove();
+              alert('ลบสำเร็จ');
+            }
+          },
+          error: function () {
+            alert('เกิดข้อผิดพลาดขณะลบข้อมูล');
+          }
+        });
+      }
+    });
+  });
+
+  // ปุ่ม เสร็จสิ้น ดำเนินการ 
+  $(document).ready(function () {
+    $('.status-btn').click(function () {
+      const button = $(this);
+      const reportId = button.data('id');
+      const currentStatus = button.data('status');
+
+      let newStatus = '';
+      if (currentStatus === 'pending') {
+        newStatus = 'in_progress';
+      } else if (currentStatus === 'in_progress') {
+        newStatus = 'completed';
+      } else if (currentStatus === 'repairclaim') {
+        newStatus = 'completed';
+      } else {
+
+        return; // ถ้า completed แล้วไม่ต้องทำอะไร
+      }
+
+      fetch(`/update-status/${reportId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+        .then(response => response.text())  // แปลง response เป็น text ก่อน
+        .then(text => {
+          console.log('Response Text:', text);  // ดูข้อความที่แท้จริง
+          return JSON.parse(text);  // แปลงเป็น JSON เอง (ถ้าแน่ใจว่าถูกต้อง)
+        })
+        .then(data => {
+          if (data.success) {
+            alert('อัปเดตสถานะเรียบร้อยแล้ว');
+            location.reload();
+          } else {
+            alert('เกิดข้อผิดพลาด');
+          }
+        })
+        .catch(err => {
+          console.error('Error parsing JSON:', err);
+          alert('เกิดข้อผิดพลาดในการแปลงข้อมูล JSON');
+        });
+
+    });
+  });
+
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+  new FinisherHeader({
+    "count": 10,
+    "size": { "min": 8, "max": 67, "pulse": 0.1 },
+    "speed": {
+      "x": { "min": 0, "max": 0.4 },
+      "y": { "min": 0, "max": 0.6 }
+    },
+    "colors": {
+      "background": "#ffffff",
+      "particles": [
+        "#faff00",
+        "#00b7ff",
+        "#ff7700"
+      ]
+    },
+    "blending": "screen",
+    "opacity": { "center": 1, "edge": 0 },
+    "skew": 0,
+    "shapes": ["c"]
+  });
+</script>
+
+{% endblock %}

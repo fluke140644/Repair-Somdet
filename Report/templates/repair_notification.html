@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f9fc;
+      color: #333;
+      padding: 20px;
+    }
+    .header {
+      background-color: #2e86de;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .content {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-top: none;
+      padding: 20px;
+      border-radius: 0 0 8px 8px;
+    }
+    .footer {
+      font-size: 12px;
+      color: #999;
+      margin-top: 30px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>📥 แจ้งเตือนรายการแจ้งซ่อมใหม่</h2>
+  </div>
+  <div class="content">
+    <p><strong>ID : </strong> {{ request_id }} </p>
+    <p><strong>ผู้แจ้ง : </strong> {{ user.get_full_name }} ({{ user.username }})</p>
+    <p><strong>ประเภท : </strong> {{ category }}</p>
+    <p><strong>รายการ : </strong> {{ sub_item }}</p>
+    <p><strong>ยี่ห้อ/รุ่น : </strong> {{ report.device_code }}</p>
+    <p><strong>เลขครุภัณฑ์ : </strong>
+    {% if report.unknown_device %}
+        ไม่ทราบเลขครุภัณฑ์
+    {% else %}
+        {{ report.asset_number }}
+    {% endif %}</p>
+    <p><strong>รายละเอียด : </strong> {{ detail }}</p>
+    <p><strong>แผนก : </strong> {{ department }}</p>
+    <p><strong>ความเร่งด่วน : </strong> {{ status_user }}</p>
+    <p><strong>เวลาแจ้ง : </strong> {{ created_at }}</p>
+    
+    
+
+  </div>
+  <div class="footer">
+     Report Repair System | โรงพยาบาลสมเด็จ
+  </div>
+</body>
+</html>
