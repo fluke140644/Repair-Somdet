@@ -44,7 +44,7 @@
   .sidebar-ad {
     position: fixed;
     left: 0;
-    top: 350px; /* หรือปรับตามความเหมาะสม */
+    top: 350px;
     z-index: 50;
   }
 
@@ -94,7 +94,7 @@
 </div>
 
 <!-- Content Area -->
-<div class="h-screen overflow-y-auto">
+<div class="min-h-screen overflow-y-auto pb-20">
   <form method="POST" action="{% url 'repair_form' %}">
     {% csrf_token %}
     <div class="flex justify-center items-start py-10 px-4">
@@ -219,6 +219,7 @@
               <label><input type="radio" name="status_user" value="เร่งด่วน" onchange="toggleClearButton()" required />
               เร่งด่วน</label>
             </div>
+            
 
             <div id="clear-button-container" class="text-right mt-2 hidden">
               <button type="button" onclick="clearRadio('fast-normal')" class="text-sm text-gray-500 underline">
@@ -234,10 +235,15 @@
       </div>
     </div>
   </form>
+  <footer class="w-full text-center py-4 bg-white/70 text-gray-700 text-sm  bottom-0 left-0 z-40">
+  2025 © IT - Somdet Hospital
+</footer>
 </div>
 
 
-<!-- Django messages integration -->
+
+
+
 {% if messages %}
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -247,7 +253,7 @@
       title: '{{ message|escapejs }}',
       confirmButtonText: 'ตกลง',
       confirmButtonColor: '{{ message.tags }}' === 'success' ? '#3085d6' : '#d33',
-      timer: 5000, // แสดง 2.5 วินาที
+      timer: 5000, //2.5 วินาที
       timerProgressBar: true
     });
     {% endfor %}
@@ -276,7 +282,6 @@
   }
 
   function toggleClearButton() {
-    // ถ้าเลือก radio แล้ว ให้โชว์ปุ่ม
     const selected = document.querySelector('input[name="status_user"]:checked');
     const container = document.getElementById('clear-button-container');
     if (selected) {
@@ -291,7 +296,6 @@
     const radios = container.querySelectorAll('input[type="radio"]');
     radios.forEach(radio => radio.checked = false);
 
-    // ซ่อนปุ่มหลังจากเคลียร์
     const clearButton = container.querySelector('#clear-button-container');
     if (clearButton) {
       clearButton.classList.add('hidden');
@@ -354,7 +358,7 @@
   });
 </script>
 
-{% comment %} // ข้อมูลอุปกรณ์แบ่งตามแผนก {% endcomment %}
+<!-- ข้อมูลอุปกรณ์แบ่งตามแผนก -->
 <script>
   const assetNumbers = {
   "เทคโนโลยีสารสนเทศ (IT)": {
@@ -906,7 +910,6 @@
     });
     document.getElementById("category").addEventListener("change", updateDeviceCode);
 
-    // เมื่อเลือกอุปกรณ์ย่อย (radio)
     document.querySelectorAll('input[name="sub_item"]').forEach(radio => {
       radio.addEventListener("change", updateDeviceCode);
     });

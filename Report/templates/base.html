@@ -75,7 +75,6 @@
 
     #custom-pagination .paginate_button.current {
       background: #4ade80;
-      /* เขียว */
       color: white;
       border-color: #4ade80;
     }
@@ -86,7 +85,6 @@
 
     .bg-purple {
       background-color: #6f42c1 !important;
-      /* Bootstrap's default purple */
       color: white;
     }
 
@@ -107,15 +105,15 @@
   <nav
     class="fixed top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-blue-500 text-white flex justify-between items-center px-4 py-3 shadow z-50">
 
-    <!-- ซ้าย: โลโก้ + ระบบแจ้งซ่อม + เมนูใหญ่ (desktop) -->
+    <!-- ซ้าย: (desktop) -->
     <div class="flex items-center space-x-6">
       <!-- โลโก้ + ระบบแจ้งซ่อม -->
       <a href="/" class="flex items-center space-x-3">
-        <img src="https://sdh.go.th/img/sdh.jpg" class="w-10 h-10 rounded-full" alt="logo">
+        <img src="{% static 'Report/images/sdh.png' %}" class="w-10 h-10 rounded-full" alt="logo">
         <span class="text-xl font-bold whitespace-nowrap">ระบบแจ้งซ่อม</span>
       </a>
 
-      <!-- เมนูใหญ่ (เฉพาะ desktop) -->
+      <!-- เมนูใหญ่ (desktop) -->
       <div class="hidden md:flex items-center space-x-6">
         <a class="nav-link" href="/about">คู่มือและการใช้งาน</a>
         <a class="nav-link cursor-pointer" onclick="openModal()">ติดต่อเจ้าหน้าที่</a>
@@ -279,9 +277,8 @@
           infoFiltered: "(กรองจากทั้งหมด _MAX_ รายการ)"
         },
         dom:
-          '<"hidden"l><"hidden"f>tip', // ซ่อนไว้ก่อน แล้วเราจะย้ายตำแหน่งเอง
+          '<"hidden"l><"hidden"f>tip',
         initComplete: function () {
-          // ย้าย length ไปยัง custom div
           $('#custom-length').html($('#repair-table_length'));
           $('#custom-search').html($('#repair-table_filter'));
           $('#custom-pagination').html($('#repair-table_paginate'));

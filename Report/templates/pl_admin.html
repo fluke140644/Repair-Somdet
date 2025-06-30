@@ -14,32 +14,22 @@
 <style>
   #repair-table thead :nth-child(n+1):nth-child(-n+13) {
     background-color: #f3f3f3;
-    /* สีเทาอ่อน */
   }
 
-  /* เพิ่มเส้นแบ่งระหว่างแต่ละแถว */
   #repair-table tbody tr {
     border-bottom: 1px solid #000000;
-    /* เส้นแบ่งสีเทาอ่อน */
   }
 
-  /* เพิ่มระยะห่างของเนื้อหาภายในเซลล์ */
   #repair-table th,
   #repair-table td {
     padding: 12px;
-    /* เพิ่มระยะห่างในเซลล์ */
     text-align: center;
-    /* จัดเนื้อหากลาง */
     vertical-align: middle;
-    /* จัดเนื้อหากลางในแนวตั้ง */
   }
 
-  /* กำหนดความกว้างของตาราง */
   #repair-table {
     width: 100%;
-    /* ให้ตารางขยายเต็มพื้นที่ */
     table-layout: auto;
-    /* ให้คอลัมน์ปรับขนาดอัตโนมัติ */
   }
 
   html,
@@ -134,7 +124,7 @@
         newStatus = 'completed';
       } else {
 
-        return; // ถ้า completed แล้วไม่ต้องทำอะไร
+        return;
       }
 
       fetch(`/update-status/${reportId}/`, {
@@ -145,10 +135,10 @@
         },
         body: JSON.stringify({ status: newStatus })
       })
-        .then(response => response.text())  // แปลง response เป็น text ก่อน
+        .then(response => response.text())
         .then(text => {
-          console.log('Response Text:', text);  // ดูข้อความที่แท้จริง
-          return JSON.parse(text);  // แปลงเป็น JSON เอง (ถ้าแน่ใจว่าถูกต้อง)
+          console.log('Response Text:', text);
+          return JSON.parse(text);
         })
         .then(data => {
           if (data.success) {
