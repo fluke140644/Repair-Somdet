@@ -128,11 +128,11 @@
                                 แก้ไข
                             </a>
 
-                            <button
+                            {% comment %} <button
                                 class="w-14 h-9 text-xs bg-red-500 text-black rounded hover:bg-red-600 delete-btn flex items-center justify-center text-center leading-none"
                                 data-id="{{ report.id }}" disabled>
                                 ลบ
-                            </button>
+                            </button> {% endcomment %}
                             {% if show_action_buttons %}
                             <button class="status-btn w-14 h-9 text-black text-xs rounded 
             {% if report.status == 'pending' %}

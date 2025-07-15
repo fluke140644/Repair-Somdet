@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 from .views import MyLoginView
 
 urlpatterns = [
+    path('user_list',views.user_list),
     path('', views.index, name='index'),
     path('export/excel/', views.export_repair_requests_excel, name='export_excel'),
     path('base',views.base),

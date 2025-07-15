@@ -26,11 +26,28 @@ from weasyprint import HTML, CSS
 import os
 from django.template.loader import render_to_string
 from django.conf import settings
+from datetime import timedelta
+
+
 
 # หน้าหลัก 
 @login_required
 def index(request):
-    return render(request,"index.html")
+    now = timezone.now()
+    two_minutes_ago = now - timedelta(minutes=2)
+
+    online_users = User.objects.filter(profile__last_activity__gte=two_minutes_ago)
+
+    admin_users = online_users.filter(is_staff=True)
+    normal_users = online_users.filter(is_staff=False)
+
+    return render(request,'index.html', {
+        'admin_users': admin_users,
+        'normal_users': normal_users,
+        'now': now
+    })
+    
+
 
 def copy(request):
     return render(request,"copy.html")
@@ -450,3 +467,20 @@ def monthly_report_pdf(request):
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="แจ้งซ่อมประจำเดือน {{ month }}.pdf"'
     return response
+
+from django.utils import timezone
+def user_list(request):
+    now = timezone.now()
+    one_minutes_ago = now - timedelta(minutes=1)
+
+    online_users = User.objects.filter(profile__last_activity__gte=one_minutes_ago)
+
+    admin_users = online_users.filter(is_staff=True)
+    normal_users = online_users.filter(is_staff=False)
+
+    return render(request, 'user_list.html', {
+        'admin_users': admin_users,
+        'normal_users': normal_users,
+        'now': now
+    })
+

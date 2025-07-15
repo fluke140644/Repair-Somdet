@@ -9,7 +9,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-
+<style>
+  @media only screen and (max-width: 768px) {
+    .card.user-list-box {
+      display: none;
+    }
+  }
+</style>
 <style>
   html,
   body {
@@ -35,11 +41,12 @@
     color: white;
     padding: 50px;
   }
+
   select:disabled {
-      background-color: #e5e7eb;
-      color: #6b7280;
-      cursor: not-allowed;
-    }
+    background-color: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
 
   .sidebar-ad {
     position: fixed;
@@ -69,95 +76,217 @@
     line-height: 1;
     z-index: 10;
   }
+
+  @media only screen and (max-width: 768px) {
+  .sidebar-ad {
+    top: 230px; /* ขยับขึ้นจาก 350px เหลือ 100px */
+    left: 10px; /* ขยับให้ชิดซ้ายเล็กน้อย */
+    max-width: 100vw; /* ไม่ให้เกินขอบจอมือถือ */
+  }
+
+  .sidebar-ad img {
+    max-width: 100%;
+    height: auto;
+  }
+}
 </style>
 
 <!-- ปุ่มโหลด restart printer -->
 <style>
   .faq-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background-color:rgb(64, 224, 64);
-  background-image: linear-gradient(147deg,rgb(169, 235, 255) 0%,rgb(41, 144, 228) 74%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.151);
-  
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgb(64, 224, 64);
+    background-image: linear-gradient(147deg, rgb(169, 235, 255) 0%, rgb(41, 144, 228) 74%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.151);
+
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+
+  .faq-button svg {
+    height: 1.5em;
+    fill: white;
+  }
+
+  .faq-button:hover svg {
+    animation: jello-vertical 0.7s both;
+  }
+
+  @keyframes jello-vertical {
+    0% {
+      transform: scale3d(1, 1, 1);
+    }
+
+    30% {
+      transform: scale3d(0.75, 1.25, 1);
+    }
+
+    40% {
+      transform: scale3d(1.25, 0.75, 1);
+    }
+
+    50% {
+      transform: scale3d(0.85, 1.15, 1);
+    }
+
+    65% {
+      transform: scale3d(1.05, 0.95, 1);
+    }
+
+    75% {
+      transform: scale3d(0.95, 1.05, 1);
+    }
+
+    100% {
+      transform: scale3d(1, 1, 1);
+    }
+  }
+
+  .tooltip {
+    position: absolute;
+    top: -20px;
+    opacity: 0;
+    background-color: rgb(64, 224, 64);
+    background-image: linear-gradient(320deg, rgb(93, 217, 255) 0%, hsl(207, 100.00%, 30.60%) 74%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition-duration: 0.2s;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+  }
+
+  .tooltip::before {
+    position: absolute;
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: #2990e4;
+    background-size: 1000%;
+    background-position: center;
+    transform: rotate(45deg);
+    bottom: -15%;
+    transition-duration: 0.3s;
+  }
+
+  .faq-button:hover .tooltip {
+    top: -60px;
+    opacity: 1;
+    transition-duration: 0.3s;
+  }
+
+  .card {
+ width: 190px;
+ height: 254px;
+ margin: 0 auto;
+ background-color: #011522;
+ border-radius: 8px;
+ z-index: 1;
 }
-.faq-button svg {
-  height: 1.5em;
-  fill: white;
+
+.tools {
+ display: flex;
+ align-items: center;
+ padding: 9px;
 }
-.faq-button:hover svg {
-  animation: jello-vertical 0.7s both;
+
+.circle {
+ padding: 0 4px;
 }
-@keyframes jello-vertical {
+
+.box {
+ display: inline-block;
+ align-items: center;
+ width: 10px;
+ height: 10px;
+ padding: 1px;
+ border-radius: 50%;
+}
+
+.red {
+ background-color: #ff605c;
+}
+
+.yellow {
+ background-color: #ffbd44;
+}
+
+.green {
+ background-color: #00ca4e;
+}
+
+.checkbox {
+  appearance: none;
+  width: 14px;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid rgb(121, 121, 121);
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.checkbox::before {
+  font-family: "Quicksand", sans-serif;
+  position: absolute;
+  bottom: -8px;
+  left: -2px;
+  content: "✔";
+  font-size: 25px;
+  color: rgb(0, 161, 8);
+  transform: scale(0);
+  transition: all 0.2s ease-in-out;
+}
+
+.checkbox:checked::before {
+  animation: zoom 0.5s ease-in-out;
+  transform: scale(1);
+}
+
+@keyframes zoom {
   0% {
-    transform: scale3d(1, 1, 1);
+    transform: scale(0);
   }
-  30% {
-    transform: scale3d(0.75, 1.25, 1);
+
+  20% {
+    transform: scale(1.5);
   }
+
   40% {
-    transform: scale3d(1.25, 0.75, 1);
+    transform: scale(0.5);
   }
+
   50% {
-    transform: scale3d(0.85, 1.15, 1);
+    transform: scale(1);
   }
-  65% {
-    transform: scale3d(1.05, 0.95, 1);
+
+  70% {
+    transform: scale(1.2);
   }
-  75% {
-    transform: scale3d(0.95, 1.05, 1);
+
+  90% {
+    transform: scale(0.8);
   }
+
   100% {
-    transform: scale3d(1, 1, 1);
+    transform: scale(1);
   }
 }
 
-.tooltip {
-  position: absolute;
-  top: -20px;
-  opacity: 0;
-  background-color:rgb(64, 224, 64);
-  background-image: linear-gradient(320deg,rgb(93, 217, 255) 0%,hsl(207, 100.00%, 30.60%) 74%);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: 0.2s;
-  pointer-events: none;
-  letter-spacing: 0.5px;
-}
 
-.tooltip::before {
-  position: absolute;
-  content: "";
-  width: 10px;
-  height: 10px;
-  background-color: #2990e4;
-  background-size: 1000%;
-  background-position: center;
-  transform: rotate(45deg);
-  bottom: -15%;
-  transition-duration: 0.3s;
-}
-
-.faq-button:hover .tooltip {
-  top: -60px;
-  opacity: 1;
-  transition-duration: 0.3s;
-}
 </style>
+
 <body class="finisher-header"></body>
 
 <div class="bg-white/50 backdrop-blur-md shadow p-6 rounded-xl text-center text-black">
@@ -166,19 +295,24 @@
 </div>
 <div class="sidebar-ad fixed left-0 top-32 z-50">
   <div class="relative w-fit">
-    <button class="absolute top-0 right-0 text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-sm z-10"
-            onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    <button
+      class="absolute top-0 right-0 text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-sm z-10"
+      onclick="this.parentElement.parentElement.style.display='none'">X</button>
     <!-- รูปเล็ก -->
     <img src="{% static 'Report/images/SLA.png' %}" alt="Service Level Agreement" class="max-w-full cursor-pointer"
-         onclick="openImageModal('{% static 'Report/images/SLA_B.png' %}')">
+      onclick="openImageModal('{% static 'Report/images/SLA_B.png' %}')">
   </div>
 </div>
 
 <!-- Modal แสดงภาพขยาย -->
-<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[9999]" onclick="closeImageModal()">
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[9999]"
+  onclick="closeImageModal()">
   <!-- รูปใหญ่ -->
-  <img id="modalImage" src="" class="max-w-none max-h-full w-auto h-auto object-contain p-4 bg-white rounded-lg shadow-xl" />
+  <img id="modalImage" src=""
+    class="max-w-none max-h-full w-auto h-auto object-contain p-1 bg-black rounded-lg shadow-xl" />
 </div>
+</div>
+
 
 <!-- Content Area -->
 <div class="min-h-screen overflow-y-auto pb-20">
@@ -188,7 +322,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl w-full">
 
         <!-- Left Panel -->
-        
+
         <div class="bg-white/70 shadow p-4 rounded">
           <h3 class="text-lg font-semibold mb-2">รายการอุปกรณ์ <span style="color: red; font-size: 12px;">*** สำคัญ
               ***</span></h3>
@@ -210,6 +344,9 @@
             <label><input type="radio" name="sub_item" value="CasePC"> Case PC</label><br>
             <label><input type="radio" name="sub_item" value="เมาส์"> Mouse</label><br>
             <label><input type="radio" name="sub_item" value="คีย์บอร์ด"> Keyboard</label><br>
+            <label><input type="radio" name="sub_item" value="Notebook"> Notebook</label><br>
+            <label><input type="radio" name="sub_item" value="เพิ่มเติม"> เพิ่มเติม <span
+                style="color: rgb(180, 0, 0);">(เขียนในช่องถัดไป)</span></label>
             <div class="text-right mt-2">
               <button type="button" onclick="clearRadio('computer-options')"
                 class="text-sm text-gray-500 underline">ล้าง</button>
@@ -222,7 +359,10 @@
             <label><input type="radio" name="sub_item" value="HOSxP"> HOSxP</label><br>
             <label><input type="radio" name="sub_item" value="X-Ray"> X-Ray</label><br>
             <label><input type="radio" name="sub_item" value="LabView"> LabView</label><br>
-            <label><input type="radio" name="sub_item" value="Microsoft"> Microsoft ( Word,Excel,Powerpoint )</label><br>
+            <label><input type="radio" name="sub_item" value="Microsoft"> Microsoft ( Word,Excel,Powerpoint
+              )</label><br>
+              <label><input type="radio" name="sub_item" value="เพิ่มเติม"> เพิ่มเติม <span
+                style="color: rgb(180, 0, 0);">(เขียนในช่องถัดไป)</span></label>
             <div class="text-right mt-2">
               <button type="button" onclick="clearRadio('software-options')"
                 class="text-sm text-gray-500 underline">ล้าง</button>
@@ -233,7 +373,10 @@
           <div id="printer-options" class="mt-4 hidden">
             <label class="block font-semibold mb-2">เครื่องปริ้น</label>
             <label><input type="radio" name="sub_item" value="กระดาษติด"> กระดาษติด</label><br>
-            <label><input type="radio" name="sub_item" value="หมึกหมด"> หมึกหมด</label>
+            <label><input type="radio" name="sub_item" value="หมึกหมด"> หมึกหมด</label><br>
+            <label><input type="radio" name="sub_item" value="ไม่สามารถเชื่อมต่อเครื่องปริ้นได้"> ไม่สามารถเชื่อมต่อเครื่องปริ้นได้</label>
+            <label><input type="radio" name="sub_item" value="เพิ่มเติม"> เพิ่มเติม <span
+                style="color: rgb(180, 0, 0);">(เขียนในช่องถัดไป)</span></label>
             <div class="text-right mt-2">
               <button type="button" onclick="clearRadio('printer-options')"
                 class="text-sm text-gray-500 underline">ล้าง</button>
@@ -243,9 +386,12 @@
           <!-- กลุ่มย่อย: network -->
           <div id="network-options" class="mt-4 hidden">
             <label class="block font-semibold mb-2">อินเตอร์เน็ต</label>
-            <label><input type="radio" name="sub_item" value="อินเตอร์เน็ตใช้งานไม่ได้">
-              อินเตอร์เน็ตใช้งานไม่ได้</label><br>
-            <label><input type="radio" name="sub_item" value="เพิ่มเติม"> เพิ่มเติม <span style="color: rgb(180, 0, 0);">(เขียนในช่องถัดไป)</span></label>
+            <label><input type="radio" name="sub_item" value="อินเตอร์เน็ตใช้งานไม่ได้"> อินเตอร์เน็ตใช้งานไม่ได้</label><br>
+            <label><input type="radio" name="sub_item" value="อินเตอร์เน็ตช้า"> อินเตอร์เน็ตช้า</label><br>
+            <label><input type="radio" name="sub_item" value="Free WiFi ใช้งานไม่ได้"> Free WiFi ใช้งานไม่ได้</label><br>
+            <label><input type="radio" name="sub_item" value="Free WiFi ใช้งานไม่ได้"> Hos Xp Error \\192.168.0.250</label>
+            <label><input type="radio" name="sub_item" value="เพิ่มเติม"> เพิ่มเติม <span
+                style="color: rgb(180, 0, 0);">(เขียนในช่องถัดไป)</span></label>
             <div class="text-right mt-2">
               <button type="button" onclick="clearRadio('network-options')"
                 class="text-sm text-gray-500 underline">ล้าง</button>
@@ -294,19 +440,25 @@
           <select id="asset_number" name="asset_number" class="w-full border border-gray-300 p-2 rounded mb-4">
             <option value="-">-- เลือกเลขครุภัณฑ์ --</option>
           </select>
-          <label>
-          <input type="checkbox" id="unknown_device" name="unknown_device" value="on" /> ไม่ทราบเลขครุภัณฑ์</label>
+          <!-- <label>
+            <input type="checkbox" id="unknown_device" name="unknown_device" value="on" /> ไม่ทราบเลขครุภัณฑ์
+            </label> -->
+            <label class="checkbox-btn">
+              <input id="unknown_device"  name="unknown_device" value="on" class="checkbox" type="checkbox"> ไม่ทราบเลขครุภัณฑ์
+              </label>
+              
           <br><br>
 
           <div id="fast-normal">
             <label class="block mb-2">สถานะ:</label>
             <div class="mb-2 space-y-2">
-              <label><input type="radio" name="status_user" value="ไม่เร่งด่วน" onchange="toggleClearButton()" required />
-              ไม่เร่งด่วน</label><br>
+              <label><input type="radio" name="status_user" value="ไม่เร่งด่วน" onchange="toggleClearButton()"
+                  required />
+                ไม่เร่งด่วน</label><br>
               <label><input type="radio" name="status_user" value="เร่งด่วน" onchange="toggleClearButton()" required />
-              เร่งด่วน</label>
+                เร่งด่วน</label>
             </div>
-            
+
 
             <div id="clear-button-container" class="text-right mt-2 hidden">
               <button type="button" onclick="clearRadio('fast-normal')" class="text-sm text-gray-500 underline">
@@ -323,16 +475,88 @@
     </div>
   </form>
   <footer class="w-full text-center py-4 bg-white/70 text-gray-700 text-sm  bottom-0 left-0 z-40">
-  2025 © IT - Somdet Hospital
-</footer>
+    2025 © IT - Somdet Hospital
+  </footer>
 </div>
 
-<a href="https://github.com/fluke140644/spooler-printer/releases/download/untagged-bad2a5214c2ffb250b95/restart_spooler.exe">
-<button class="faq-button">
-  <img src="{% static 'Report/images/printer.png' %}" alt="Printer" width="24" height="24">
-  <span class="tooltip">Restart Pinter</span>
-</button>
+<a
+  href="https://github.com/fluke140644/spooler-printer/releases/download/untagged-bad2a5214c2ffb250b95/restart_spooler.exe">
+  <button class="faq-button">
+    <img src="{% static 'Report/images/printer.png' %}" alt="Printer" width="24" height="24">
+    <span class="tooltip">Restart Pinter</span>
+  </button>
 </a>
+
+<div class="card user-list-box" style="
+  position: fixed;
+  top: 350px;
+  right: 40px;
+  width: 200px;
+  max-height: 50vh;
+  background-color: #2c2f33;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+  z-index: 9999;
+  overflow-y: auto;
+">
+
+  <!-- ปุ่มวงกลม -->
+  <div class="tools" style="display: flex; gap: 2px; margin-bottom: 1px;">
+    <div class="circle">
+      <span class="green box" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: green;"></span>
+    </div>
+  </div>
+
+  <!-- กล่องผู้ใช้ -->
+  <div>
+    <h2 style="color: #6f42c1; text-align: center; margin-bottom: 10px;" >ผู้ใช้ทั้งหมด</h2>
+    <ul>
+      {% for user in users %}
+      <span style="color: green;">●</span>
+      <li style="color: white; ">
+        {{ user.username }} :
+        {{ user.profile.last_activity }} / {{ now }}
+        {% if user.profile.is_online %}
+        <span style="color: green;">● ออนไลน์</span>
+        {% else %}
+        <span style="color: gray;">● ออฟไลน์</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h2 style="color: white; text-align: center; margin-bottom: 2px;">Admin</h2>
+    <ul>
+      {% for user in admin_users %}
+      <li style="color: white; text-align: center; margin-bottom: 10px;">
+        {{ user.first_name }}
+        <span style="color: green;">● ออนไลน์</span>
+      </li>
+      {% empty %}
+      <li style="color: gray; text-align: center;">Admin Offline</li>
+      {% endfor %}
+    </ul>
+
+    <hr style="border-color: #666;">
+
+    <h2 style="color: white; text-align: center; margin-top: 10px;">User</h2>
+    <ul>
+      {% for user in normal_users %}
+      <li style="color: white; text-align: center; margin-bottom: 10px;">
+        {{ user.first_name }}
+        <!-- {{ user.profile.last_activity|date:"H:i" }} -->
+        <span style="color: green;">● ออนไลน์</span>
+      </li>
+      {% empty %}
+      <li style="color: gray; text-align: center;">User Offline</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+
+  
 
 
 
@@ -415,20 +639,20 @@
 
 <!-- disabled ครุภัณฑ์ -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const checkbox = document.getElementById("unknown_device");
-      const select = document.getElementById("asset_number");
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkbox = document.getElementById("unknown_device");
+    const select = document.getElementById("asset_number");
 
-      checkbox.addEventListener("change", function () {
-        if (this.checked) {
-          select.selectedIndex = 0;
-          select.disabled = true;
-        } else {
-          select.disabled = false;
-        }
-      });
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        select.selectedIndex = 0;
+        select.disabled = true;
+      } else {
+        select.disabled = false;
+      }
     });
-  </script>
+  });
+</script>
 
 <script type="text/javascript">
   new FinisherHeader({
@@ -456,522 +680,522 @@
 <!-- ข้อมูลอุปกรณ์แบ่งตามแผนก -->
 <script>
   const assetNumbers = {
-  "เทคโนโลยีสารสนเทศ (IT)": {
-    "Samsung 24": ["7440-017-0001/2-63"],
-    "Dell 24": ["6117-001-0003"],
-    "Acer 24": ["7440-017-0001/4-62"],
-    "ThinkCentre": ["7740-023-0001/3-67","7740-023-0002/3-67"],
-    "APC-BV800I-MST": ["6116-001-0002/13-66",],
-  },
-  "อุบัติเหตุ-ฉุกเฉิน (ER)": {
-    "Acer 24": ["6116-001-0052"],
-    "Dell 24": ["6117-001-0053"]
-  }
-};
+    "เทคโนโลยีสารสนเทศ (IT)": {
+      "Samsung 24": ["7440-017-0001/2-63"],
+      "Dell 24": ["6117-001-0003"],
+      "Acer 24": ["7440-017-0001/4-62"],
+      "ThinkCentre": ["7740-023-0001/3-67", "7740-023-0002/3-67"],
+      "APC-BV800I-MST": ["6116-001-0002/13-66",],
+    },
+    "อุบัติเหตุ-ฉุกเฉิน (ER)": {
+      "Acer 24": ["6116-001-0052"],
+      "Dell 24": ["6117-001-0053"]
+    }
+  };
 
   const deviceOptions = {
     "เทคโนโลยีสารสนเทศ (IT)": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "ThinkCentre", label: "ThinkCentre " }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-        
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I-MST", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "ThinkCentre", label: "ThinkCentre " }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I-MST", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
 
     "อุบัติเหตุ-ฉุกเฉิน (ER)": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "ห้องบัตร": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
-  
+
     "ห้องรังสี": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "ห้องคลอด": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "ห้องผ่าตัด": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
 
     "ห้องคุณภาพเเละแผนงาน": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
 
     "งานจิตเวช": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
 
     "บริหารทั่วไป": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "พัสดุ": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "เวชระเบียน": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "คลินิกโรคเรื้อรัง": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
 
     "คลินิกโรคทางเดินหายใจ": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "แผนไทย": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
     "ปฐมภูมิ": {
       "คอมพิวเตอร์": {
         "จอคอมพิวเตอร์": [
-        { value: "Acer 24", label: "Acer 24”" },
-        { value: "Dell 24", label: "Dell 24”" }
-      ],
-      "All in One": [
-        { value: "Think1", label: "ThinkCentre 1" }
-      ],
-      "เมาส์": [
-        { value: "LenovoMouse", label: "Lenovo EMS-537A" },
-      ],
-      "คีย์บอร์ด": [
-        { value: "LenovoKB", label: "Lenovo EKB-536A" }
-      ],
-      "UPS": [
-        { value: "APC-BV800I ", label: "APC-BV800I-MST" }
-      ],
-      "CasePC": [
-        { value: "PC ", label: "PC-1" }
-      ]
+          { value: "Acer 24", label: "Acer 24”" },
+          { value: "Dell 24", label: "Dell 24”" }
+        ],
+        "All in One": [
+          { value: "Think1", label: "ThinkCentre 1" }
+        ],
+        "เมาส์": [
+          { value: "LenovoMouse", label: "Lenovo EMS-537A" },
+        ],
+        "คีย์บอร์ด": [
+          { value: "LenovoKB", label: "Lenovo EKB-536A" }
+        ],
+        "UPS": [
+          { value: "APC-BV800I ", label: "APC-BV800I-MST" }
+        ],
+        "CasePC": [
+          { value: "PC ", label: "PC-1" }
+        ]
+      },
+      "เครื่องปริ้น": {
+        "กระดาษติด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+        "หมึกหมด": [
+          { value: "EPSON L5290", label: "EPSON L5290" },
+          { value: "EPSON L3110", label: "EPSON L3110" }
+        ],
+      }
     },
-    "เครื่องปริ้น": {
-      "กระดาษติด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-      "หมึกหมด": [
-        { value: "EPSON L5290", label: "EPSON L5290" },
-        { value: "EPSON L3110", label: "EPSON L3110" }
-      ],
-    }
-  },
   };
 
   function updateDeviceCode() {
@@ -1011,25 +1235,25 @@
   });
 
   function updateAssetNumber() {
-  const selectedDevice = document.getElementById("device_code").value;
-  const selectedDept = document.getElementById("department").value;
-  const assetSelect = document.getElementById("asset_number");
+    const selectedDevice = document.getElementById("device_code").value;
+    const selectedDept = document.getElementById("department").value;
+    const assetSelect = document.getElementById("asset_number");
 
-  assetSelect.innerHTML = `<option value="-">เลือกเลขครุภัณฑ์</option>`;
+    assetSelect.innerHTML = `<option value="-">เลือกเลขครุภัณฑ์</option>`;
 
     if (
-    assetNumbers[selectedDept] &&
-    assetNumbers[selectedDept][selectedDevice]
-  ) {
-    assetNumbers[selectedDept][selectedDevice].forEach(code => {
-      const opt = document.createElement("option");
-      opt.value = code;
-      opt.textContent = code;
-      assetSelect.appendChild(opt);
-    });
+      assetNumbers[selectedDept] &&
+      assetNumbers[selectedDept][selectedDevice]
+    ) {
+      assetNumbers[selectedDept][selectedDevice].forEach(code => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = code;
+        assetSelect.appendChild(opt);
+      });
+    }
   }
-}
- 
+
 </script>
 
 
